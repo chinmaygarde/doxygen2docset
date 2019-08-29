@@ -26,4 +26,6 @@ bool CopyFiles(const std::string& from, const std::vector<std::string>& to,
 
 bool CopyFile(const std::string& from, const std::string& to);
 
+bool CopyData(const void* data, size_t length, const std::string& to);
+
 }  // namespace d2d

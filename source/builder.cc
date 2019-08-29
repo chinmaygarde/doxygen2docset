@@ -17,13 +17,14 @@ bool BuildDocset(const std::string& docs, const std::string& location) {
     return false;
   }
 
+  const auto docset_id = plist_parser.ReadDocsetID();
   const auto docset_name = plist_parser.ReadDocsetName();
-  if (docset_name.size() == 0) {
-    D2D_ERROR << "Docset name could not be read from the Info.plist.";
+  if (docset_id.size() == 0 || docset_name.size() == 0) {
+    D2D_ERROR << "Docset name or ID could not be read from the Info.plist.";
     return false;
   }
 
-  std::vector<std::string> resources_dir = {location, docset_name + ".docset",
+  std::vector<std::string> resources_dir = {location, docset_id + ".docset",
                                             "Contents", "Resources"};
   if (!MakeDirectories(resources_dir)) {
     D2D_ERROR << "Could not not create docset directories.";
@@ -51,7 +52,7 @@ bool BuildDocset(const std::string& docs, const std::string& location) {
   }
 
   std::vector<std::string> documents_directory = {
-      location, docset_name + ".docset", "Contents", "Resources", "Documents"};
+      location, docset_id + ".docset", "Contents", "Resources", "Documents"};
 
   const std::set<std::string> filtered = {
       "Tokens.xml",
@@ -68,10 +69,10 @@ bool BuildDocset(const std::string& docs, const std::string& location) {
     return false;
   }
 
-  if (!CopyFile(JoinPaths({docs, "Info.plist"}),
-                JoinPaths({location, docset_name + ".docset", "Contents",
-                           "Info.plist"}))) {
-    D2D_ERROR << "Could not copy Info.plist to the docset.";
+  if (!WriteDocSetPlist(docset_id, docset_name,
+                        JoinPaths({location, docset_id + ".docset", "Contents",
+                                   "Info.plist"}))) {
+    D2D_ERROR << "Could not write Info.plist to the docset.";
     return false;
   }
 

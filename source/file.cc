@@ -121,8 +121,7 @@ bool MakeDirectories(const std::vector<std::string>& directories) {
   return true;
 }
 
-static bool CopyFile(const struct stat& from_stat, const AutoFD& from,
-                     const std::string& to_path) {
+bool CopyData(const void* data, size_t length, const std::string& to_path) {
   AutoFD to_file(
       D2D_TEMP_FAILURE_RETRY(::open(to_path.c_str(), O_CREAT | O_TRUNC | O_RDWR,
                                     S_IRUSR | S_IWUSR | S_IXUSR)));
@@ -132,31 +131,41 @@ static bool CopyFile(const struct stat& from_stat, const AutoFD& from,
     return false;
   }
 
-  if (::ftruncate(to_file.Get(), from_stat.st_size) != 0) {
+  if (::ftruncate(to_file.Get(), length) != 0) {
     D2D_ERROR << "Could not truncate file " << to_path;
     return false;
   }
-
-  AutoMapping from_mapping(::mmap(nullptr, from_stat.st_size, PROT_READ,
-                                  MAP_FILE | MAP_PRIVATE, from.Get(), 0),
-                           from_stat.st_size);
-  AutoMapping to_mapping(::mmap(nullptr, from_stat.st_size, PROT_WRITE,
+  AutoMapping to_mapping(::mmap(nullptr, length, PROT_WRITE,
                                 MAP_FILE | MAP_SHARED, to_file.Get(), 0),
-                         from_stat.st_size);
+                         length);
 
-  if (!from_mapping.IsValid() || !to_mapping.IsValid()) {
+  if (!to_mapping.IsValid()) {
     D2D_ERROR << "Could not setup mapping to perform file copy.";
     return false;
   }
 
-  ::memcpy(to_mapping.Get(), from_mapping.Get(), from_stat.st_size);
+  ::memcpy(to_mapping.Get(), data, length);
 
-  if (::msync(to_mapping.Get(), from_stat.st_size, MS_SYNC) != 0) {
+  if (::msync(to_mapping.Get(), length, MS_SYNC) != 0) {
     D2D_ERROR << "Could not sync file contents.";
     return false;
   }
 
   return true;
+}
+
+static bool CopyFile(const struct stat& from_stat, const AutoFD& from,
+                     const std::string& to_path) {
+  AutoMapping from_mapping(::mmap(nullptr, from_stat.st_size, PROT_READ,
+                                  MAP_FILE | MAP_PRIVATE, from.Get(), 0),
+                           from_stat.st_size);
+
+  if (!from_mapping.IsValid()) {
+    D2D_ERROR << "Could not setup mapping to perform file copy.";
+    return false;
+  }
+
+  return CopyData(from_mapping.Get(), from_stat.st_size, to_path);
 }
 
 bool CopyFile(const std::string& from, const std::string& to) {
