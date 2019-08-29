@@ -1,5 +1,10 @@
 #include "token.h"
 
+#include <map>
+#include <string>
+
+#include "logger.h"
+
 namespace d2d {
 
 Token::Token(const tinyxml2::XMLElement* element) {
@@ -60,8 +65,35 @@ const std::string& Token::GetDeclaredIn() const { return declared_in_; }
 
 std::string Token::GetIndexName() const { return name_; }
 
-std::string Token::GetIndexType() const { return "Class"; }
+static const std::map<std::string, std::string> kDocsetTypeMap = {
+    {"func", "Function"},   //
+    {"tdef", "Type"},       //
+    {"macro", "Macro"},     //
+    {"data", "Variable"},   //
+    {"econst", "Enum"},     //
+    {"cl", "Type"},         //
+    {"instp", "Variable"},  //
+    {"cat", "Category"},    //
+    {"instm", "Method"},    //
+    {"intf", "Class"},      //
+    {"intfm", "Method"},    //
+    {"clm", "Method"},      //
+    {"intfcm", "Method"},   //
+    {"intfp", "Variable"},  //
+    {"ffunc", "Class"},     //
+    {"tmplt", "Class"},     //
+    {"ns", "Namespace"},    //
+};
 
-std::string Token::GetIndexPath() const { return path_; }
+std::string Token::GetIndexType() const {
+  auto found = kDocsetTypeMap.find(type_);
+  if (found != kDocsetTypeMap.end()) {
+    return found->second;
+  }
+
+  return "Data";
+}
+
+std::string Token::GetIndexPath() const { return path_ + "#" + anchor_; }
 
 }  // namespace d2d
