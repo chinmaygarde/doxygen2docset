@@ -107,9 +107,9 @@ bool DocsetIndex::AddTokens(const std::vector<Token>& tokens) {
       return false;
     }
 
-    const auto& name = token.GetName();
-    const auto& type = token.GetType();
-    const auto& path = token.GetPath();
+    const auto name = token.GetIndexName();
+    const auto type = token.GetIndexType();
+    const auto path = token.GetIndexPath();
 
     if (::sqlite3_bind_text(token_statement_, 1, name.data(),
                             static_cast<int>(name.size()),

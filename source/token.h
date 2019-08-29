@@ -17,6 +17,12 @@ class Token {
 
   bool IsValid() const;
 
+  std::string GetIndexName() const;
+
+  std::string GetIndexType() const;
+
+  std::string GetIndexPath() const;
+
   const std::string& GetName() const;
 
   const std::string& GetLanguage() const;

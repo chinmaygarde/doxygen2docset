@@ -1,12 +1,19 @@
 add_library(doxygen2docset
-  "token_parser.h"
-  "token_parser.cc"
-  "logger.h"
-  "macros.h"
-  "token.h"
-  "token.cc"
-  "docset_index.cc"
-  "docset_index.h"
+  STATIC
+    "builder.cc"
+    "builder.h"
+    "docset_index.cc"
+    "docset_index.h"
+    "file.cc"
+    "file.h"
+    "logger.h"
+    "macros.h"
+    "plist_parser.cc"
+    "plist_parser.h"
+    "token.cc"
+    "token.h"
+    "token_parser.cc"
+    "token_parser.h"
 )
 
 target_link_libraries(doxygen2docset

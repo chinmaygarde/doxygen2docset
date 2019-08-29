@@ -2,6 +2,7 @@
 
 #include <gtest/gtest.h>
 
+#include "builder.h"
 #include "docset_index.h"
 #include "token_parser.h"
 
@@ -42,6 +43,13 @@ TEST(DoxyGen2DocsetTest, CanInsertTokensIntoIndex) {
   ASSERT_EQ(tokens.size(), 24877u);
 
   ASSERT_TRUE(index.AddTokens(tokens));
+}
+
+TEST(DoxyGen2DocsetTest, CanBuildCompleteDocset) {
+  ASSERT_TRUE(
+      BuildDocset("/Users/chinmaygarde/VersionControlled/engine/src/flutter/"
+                  "docs/doxygen/html",
+                  "/Users/chinmaygarde/Desktop/builtdocset"));
 }
 
 }  // namespace testing

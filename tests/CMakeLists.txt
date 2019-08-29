@@ -5,6 +5,6 @@ add_executable(doxygen2docset_unittests
 
 target_link_libraries(doxygen2docset_unittests
   PRIVATE
-    gtest_main
+    gtest
     doxygen2docset
 )
