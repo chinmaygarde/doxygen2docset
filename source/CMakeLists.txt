@@ -1,4 +1,4 @@
-add_library(doxygen2docset
+add_library(doxygen2docset_lib
   STATIC
     "builder.cc"
     "builder.h"
@@ -16,13 +16,13 @@ add_library(doxygen2docset
     "token_parser.h"
 )
 
-target_link_libraries(doxygen2docset
+target_link_libraries(doxygen2docset_lib
   PUBLIC
     tinyxml2
     sqlite3
 )
 
-target_include_directories(doxygen2docset
+target_include_directories(doxygen2docset_lib
   PUBLIC
     "."
 )

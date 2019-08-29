@@ -20,7 +20,7 @@ PlistParser::~PlistParser() = default;
 
 bool PlistParser::IsValid() const { return is_valid_; }
 
-std::string PlistParser::ReadDocsetID() const {
+std::string PlistParser::ReadStringForKey(const std::string& key) const {
   if (!is_valid_) {
     D2D_ERROR << "XML Plist could not be parsed.";
     return "";
@@ -29,8 +29,7 @@ std::string PlistParser::ReadDocsetID() const {
     if (auto dict = plist->FirstChildElement("dict")) {
       for (auto child = dict->FirstChildElement(); child != nullptr;
            child = child->NextSiblingElement()) {
-        if (strncmp(child->GetText(), "CFBundleIdentifier",
-                    strlen("CFBundleIdentifier")) == 0) {
+        if (strncmp(child->GetText(), key.data(), key.size()) == 0) {
           if (auto version = child->NextSiblingElement("string")) {
             return version->GetText();
           }
@@ -41,25 +40,12 @@ std::string PlistParser::ReadDocsetID() const {
   return "";
 }
 
+std::string PlistParser::ReadDocsetID() const {
+  return ReadStringForKey("CFBundleIdentifier");
+}
+
 std::string PlistParser::ReadDocsetName() const {
-  if (!is_valid_) {
-    D2D_ERROR << "XML Plist could not be parsed.";
-    return "";
-  }
-  if (auto plist = xml_document_.FirstChildElement("plist")) {
-    if (auto dict = plist->FirstChildElement("dict")) {
-      for (auto child = dict->FirstChildElement(); child != nullptr;
-           child = child->NextSiblingElement()) {
-        if (strncmp(child->GetText(), "CFBundleName", strlen("CFBundleName")) ==
-            0) {
-          if (auto version = child->NextSiblingElement("string")) {
-            return version->GetText();
-          }
-        }
-      }
-    }
-  }
-  return "";
+  return ReadStringForKey("CFBundleName");
 }
 
 bool WriteDocSetPlist(const std::string& bundle_identifier,

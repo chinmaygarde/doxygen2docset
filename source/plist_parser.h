@@ -23,6 +23,8 @@ class PlistParser {
   tinyxml2::XMLDocument xml_document_;
   bool is_valid_ = false;
 
+  std::string ReadStringForKey(const std::string& key) const;
+
   D2D_DISALLOW_COPY_AND_ASSIGN(PlistParser);
 };
 

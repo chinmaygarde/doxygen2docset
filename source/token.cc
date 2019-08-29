@@ -63,26 +63,36 @@ const std::string& Token::GetAnchor() const { return anchor_; }
 
 const std::string& Token::GetDeclaredIn() const { return declared_in_; }
 
-std::string Token::GetIndexName() const { return name_; }
+std::string Token::GetIndexName() const {
+  // Get rid of the namespace in the name.
+  {
+    auto found = name_.find_last_of("::");
+    if (found != std::string::npos) {
+      return name_.substr(found + 1);
+    }
+  }
+
+  return name_;
+}
 
 static const std::map<std::string, std::string> kDocsetTypeMap = {
-    {"func", "Function"},   //
-    {"tdef", "Type"},       //
-    {"macro", "Macro"},     //
+    {"cat", "Category"},    //
+    {"cl", "Class"},        //
+    {"clm", "Method"},      //
     {"data", "Variable"},   //
     {"econst", "Enum"},     //
-    {"cl", "Type"},         //
-    {"instp", "Variable"},  //
-    {"cat", "Category"},    //
-    {"instm", "Method"},    //
-    {"intf", "Class"},      //
-    {"intfm", "Method"},    //
-    {"clm", "Method"},      //
-    {"intfcm", "Method"},   //
-    {"intfp", "Variable"},  //
     {"ffunc", "Class"},     //
-    {"tmplt", "Class"},     //
+    {"func", "Function"},   //
+    {"instm", "Method"},    //
+    {"instp", "Variable"},  //
+    {"intf", "Class"},      //
+    {"intfcm", "Method"},   //
+    {"intfm", "Method"},    //
+    {"intfp", "Variable"},  //
+    {"macro", "Macro"},     //
     {"ns", "Namespace"},    //
+    {"tdef", "Type"},       //
+    {"tmplt", "Class"},     //
 };
 
 std::string Token::GetIndexType() const {
