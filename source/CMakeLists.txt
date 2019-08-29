@@ -3,6 +3,8 @@ add_library(doxygen2docset
   "definition_parser.cc"
   "logger.h"
   "macros.h"
+  "token.h"
+  "token.cc"
 )
 
 target_link_libraries(doxygen2docset

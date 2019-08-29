@@ -4,7 +4,6 @@
 #include <fcntl.h>
 #include <sys/mman.h>
 #include <sys/stat.h>
-#include <tinyxml2.h>
 #include <unistd.h>
 
 #include "logger.h"
@@ -40,10 +39,8 @@ DefinitionParser::DefinitionParser(const std::string& file_path) {
     return;
   }
 
-  tinyxml2::XMLDocument xml_document;
-
   auto parse_result =
-      xml_document.Parse(static_cast<const char*>(mapping), stat_buf.st_size);
+      xml_document_.Parse(static_cast<const char*>(mapping), stat_buf.st_size);
 
   ::munmap(mapping, stat_buf.st_size);
 
@@ -58,5 +55,26 @@ DefinitionParser::DefinitionParser(const std::string& file_path) {
 DefinitionParser::~DefinitionParser() = default;
 
 bool DefinitionParser::IsValid() const { return is_valid_; }
+
+std::vector<Token> DefinitionParser::ReadTokens() const {
+  if (!is_valid_) {
+    return {};
+  }
+
+  std::vector<Token> tokens;
+
+  if (auto xml_tokens = xml_document_.FirstChildElement("Tokens")) {
+    for (auto xml_token = xml_tokens->FirstChildElement("Token");
+         xml_token != nullptr;
+         xml_token = xml_token->NextSiblingElement("Token")) {
+      Token token(xml_token);
+      if (token.IsValid()) {
+        tokens.emplace_back(std::move(token));
+      }
+    }
+  }
+
+  return tokens;
+}
 
 }  // namespace d2d
