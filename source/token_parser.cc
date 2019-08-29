@@ -1,5 +1,5 @@
 
-#include "definition_parser.h"
+#include "token_parser.h"
 
 #include <fcntl.h>
 #include <sys/mman.h>
@@ -10,7 +10,7 @@
 
 namespace d2d {
 
-DefinitionParser::DefinitionParser(const std::string& file_path) {
+TokenParser::TokenParser(const std::string& file_path) {
   if (file_path.size() == 0) {
     D2D_ERROR << "File path was empty.";
     return;
@@ -52,11 +52,11 @@ DefinitionParser::DefinitionParser(const std::string& file_path) {
   is_valid_ = true;
 }
 
-DefinitionParser::~DefinitionParser() = default;
+TokenParser::~TokenParser() = default;
 
-bool DefinitionParser::IsValid() const { return is_valid_; }
+bool TokenParser::IsValid() const { return is_valid_; }
 
-std::vector<Token> DefinitionParser::ReadTokens() const {
+std::vector<Token> TokenParser::ReadTokens() const {
   if (!is_valid_) {
     return {};
   }

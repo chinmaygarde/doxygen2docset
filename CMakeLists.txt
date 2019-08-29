@@ -6,6 +6,7 @@ project("doxygen2docset" LANGUAGES CXX C)
 
 add_subdirectory("third_party/googletest")
 add_subdirectory("third_party/tinyxml2")
+add_subdirectory("third_party/sqlite3")
 
 add_subdirectory("source")
 add_subdirectory("tests")
