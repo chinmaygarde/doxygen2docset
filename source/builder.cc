@@ -68,8 +68,9 @@ bool BuildDocset(const std::string& docs, const std::string& location) {
     return false;
   }
 
-  if (CopyFile(JoinPaths({docs, "Info.plist"}),
-               JoinPaths({location, "Contents", "Info.plist"}))) {
+  if (!CopyFile(JoinPaths({docs, "Info.plist"}),
+                JoinPaths({location, docset_name + ".docset", "Contents",
+                           "Info.plist"}))) {
     D2D_ERROR << "Could not copy Info.plist to the docset.";
     return false;
   }

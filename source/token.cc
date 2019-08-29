@@ -60,7 +60,7 @@ const std::string& Token::GetDeclaredIn() const { return declared_in_; }
 
 std::string Token::GetIndexName() const { return name_; }
 
-std::string Token::GetIndexType() const { return type_; }
+std::string Token::GetIndexType() const { return "Class"; }
 
 std::string Token::GetIndexPath() const { return path_; }
 

@@ -127,17 +127,22 @@ static bool CopyFile(const struct stat& from_stat, const AutoFD& from,
       D2D_TEMP_FAILURE_RETRY(::open(to_path.c_str(), O_CREAT | O_TRUNC | O_RDWR,
                                     S_IRUSR | S_IWUSR | S_IXUSR)));
   if (!to_file.IsValid()) {
-    D2D_ERROR << "Could not create the file to write to: " << strerror(errno);
+    D2D_ERROR << "Could not create the file " << to_path
+              << " to write to: " << strerror(errno);
+    return false;
+  }
+
+  if (::ftruncate(to_file.Get(), from_stat.st_size) != 0) {
+    D2D_ERROR << "Could not truncate file " << to_path;
     return false;
   }
 
   AutoMapping from_mapping(::mmap(nullptr, from_stat.st_size, PROT_READ,
                                   MAP_FILE | MAP_PRIVATE, from.Get(), 0),
                            from_stat.st_size);
-  AutoMapping to_mapping(
-      ::mmap(nullptr, from_stat.st_size, PROT_READ | PROT_WRITE,
-             MAP_FILE | MAP_SHARED, to_file.Get(), 0),
-      from_stat.st_size);
+  AutoMapping to_mapping(::mmap(nullptr, from_stat.st_size, PROT_WRITE,
+                                MAP_FILE | MAP_SHARED, to_file.Get(), 0),
+                         from_stat.st_size);
 
   if (!from_mapping.IsValid() || !to_mapping.IsValid()) {
     D2D_ERROR << "Could not setup mapping to perform file copy.";
@@ -151,7 +156,24 @@ static bool CopyFile(const struct stat& from_stat, const AutoFD& from,
     return false;
   }
 
-  return false;
+  return true;
+}
+
+bool CopyFile(const std::string& from, const std::string& to) {
+  struct stat from_stat = {};
+  if (::stat(from.c_str(), &from_stat) != 0) {
+    D2D_ERROR << "Could not stat file " << from;
+    return false;
+  }
+
+  AutoFD from_fd(D2D_TEMP_FAILURE_RETRY(::open(from.c_str(), O_RDONLY)));
+
+  if (!from_fd.IsValid()) {
+    D2D_ERROR << "From file was not valid.";
+    return false;
+  }
+
+  return CopyFile(from_stat, from_fd, to);
 }
 
 bool CopyFiles(const std::string& from_path,
@@ -181,6 +203,10 @@ bool CopyFiles(const std::string& from_path,
       continue;
     }
 
+    if (!predicate(file_name)) {
+      continue;
+    }
+
     AutoFD from_fd(D2D_TEMP_FAILURE_RETRY(
         ::openat(::dirfd(from.Get()), file_name.c_str(), O_RDONLY)));
     if (!from_fd.IsValid()) {
@@ -195,7 +221,13 @@ bool CopyFiles(const std::string& from_path,
     }
 
     if (S_ISDIR(from_stat.st_mode)) {
-      assert(false);
+      std::vector<std::string> to_subpath = to_path;
+      to_subpath.push_back(file_name);
+      if (!CopyFiles(JoinPaths({from_path, file_name}), to_subpath,
+                     predicate)) {
+        D2D_ERROR << "Could not copy directory " << file_name;
+        return false;
+      }
     } else {
       if (!CopyFile(from_stat, from_fd, JoinPaths(to_path, file_name))) {
         D2D_ERROR << "Could not copy file " << file_name;
@@ -204,13 +236,7 @@ bool CopyFiles(const std::string& from_path,
     }
   }
 
-  assert(false);
   return true;
-}
-
-bool CopyFile(const std::string& from, const std::string& to) {
-  assert(false);
-  return false;
 }
 
 std::string JoinPaths(const std::vector<std::string>& paths) {
