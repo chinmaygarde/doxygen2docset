@@ -1,0 +1,46 @@
+{
+  "build_systems":
+  [
+    {
+      "name": "Doxygen2Docset CMake",
+      "shell_cmd": "(mkdir -p build && cd build && cmake ../ -G Ninja)",
+      "working_dir": "${project_path}",
+      "shell": true,
+    },
+    {
+      "file_regex": "(?:..\/)*([a-zA-Z\/_\\.\\d+-]+):(\\d+):(\\d+): ([\\w\\s':<>,&()^*=;-]+)",
+      "name": "Doxygen2Docset Build & Test",
+      "shell_cmd": "(cd build && ninja && ./tests/doxygen2docset_unittests)",
+      "working_dir": "${project_path}",
+      "shell": true,
+    },
+  ],
+  "folders":
+  [
+    {
+      "index_include_patterns":
+      [
+        "*.h",
+        "*.cc",
+        "*.c",
+        "*.cpp",
+        "*.mm",
+      ],
+      "file_exclude_patterns":
+      [
+        "._*"
+      ],
+      "folder_exclude_patterns":
+      [
+        "build",
+      ],
+      "binary_file_patterns":
+      [
+        "*.ARW",
+      ],
+      "follow_symlinks": false,
+      "name": "Doxygen2Docset",
+      "path": "."
+    },
+  ]
+}
