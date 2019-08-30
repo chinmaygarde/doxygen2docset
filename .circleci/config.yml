@@ -9,7 +9,7 @@ jobs:
 
       - run: apt update
 
-      - run: apt install cmake ninja
+      - run: apt install -y cmake ninja-build
 
       - run:
           name: CMake
