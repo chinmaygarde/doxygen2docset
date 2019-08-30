@@ -2,14 +2,14 @@ version: 2
 jobs:
   build:
     docker:
-      - image: debian:stretch
+      - image: ubuntu:eoan
 
     steps:
       - checkout
 
-      - run: apt update
-
-      - run: apt install -y cmake ninja-build
+      - run:
+          name: Install Dependencies
+          command: apt update && apt install -y build-essential cmake ninja-build
 
       - run:
           name: CMake
