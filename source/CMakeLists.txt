@@ -29,7 +29,10 @@ target_include_directories(doxygen2docset_lib
 
 add_executable(doxygen2docset "main.cc")
 
+
 target_link_libraries(doxygen2docset
     PRIVATE
         doxygen2docset_lib
 )
+
+set_target_properties(doxygen2docset PROPERTIES LINK_FLAGS_RELEASE -s)
