@@ -45,3 +45,15 @@ Preparing Doxygen for Docsets
     these files are absent, the docset cannot be generated.
     * `Tokens.xml`
     * `Info.plist`
+
+
+Building Locally
+----------------
+
+Requirements: Mac or Linux Host, Clang or GCC (C++ 17 capable), and, CMake.
+
+* Make sure to pull submodules: `git submodule update --init --recursive`.
+* Create the build directory: `mkdir build/`.
+* Invoke CMake and build. `cd build/ && cmake ../ && make`.
+* The executable is present in `./build/source/doxygen2docset`.
+* The unit-test target is present in `./build/tests/doxygen2docset_unittests`.
