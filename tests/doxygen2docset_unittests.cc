@@ -3,15 +3,18 @@
 
 #include "builder.h"
 #include "docset_index.h"
+#include "fixture.h"
 #include "token_parser.h"
+
+#ifndef D2D_FIXTURES_LOCATION
+#error Fixtures not available.
+#endif
 
 namespace d2d {
 namespace testing {
 
 TEST(DoxyGen2DocsetTest, CanParseTokens) {
-  TokenParser parser(
-      "/Users/chinmaygarde/VersionControlled/doxygen2docset/tests/fixtures/"
-      "Tokens.xml");
+  TokenParser parser(D2D_FIXTURES_LOCATION "/Tokens.xml");
 
   ASSERT_TRUE(parser.IsValid());
   auto tokens = parser.ReadTokens();
@@ -26,16 +29,14 @@ TEST(DoxyGen2DocsetTest, CanParseTokens) {
 }
 
 TEST(DoxyGen2DocsetTest, CanCreateDocsetIndex) {
-  DocsetIndex index("/Users/chinmaygarde/Desktop/docsetindex.db");
+  DocsetIndex index("/tmp/docsetindex.db");
   ASSERT_TRUE(index.IsValid());
 }
 
 TEST(DoxyGen2DocsetTest, CanInsertTokensIntoIndex) {
-  DocsetIndex index("/Users/chinmaygarde/Desktop/docsetindex.db");
+  DocsetIndex index("/tmp/docsetindex.db");
   ASSERT_TRUE(index.IsValid());
-  TokenParser parser(
-      "/Users/chinmaygarde/VersionControlled/doxygen2docset/tests/fixtures/"
-      "Tokens.xml");
+  TokenParser parser(D2D_FIXTURES_LOCATION "/Tokens.xml");
 
   ASSERT_TRUE(parser.IsValid());
   auto tokens = parser.ReadTokens();
@@ -45,10 +46,7 @@ TEST(DoxyGen2DocsetTest, CanInsertTokensIntoIndex) {
 }
 
 TEST(DoxyGen2DocsetTest, CanBuildCompleteDocset) {
-  ASSERT_TRUE(
-      BuildDocset("/Users/chinmaygarde/VersionControlled/engine/src/flutter/"
-                  "docs/doxygen/html",
-                  "/Users/chinmaygarde/Desktop/builtdocset"));
+  ASSERT_TRUE(BuildDocset(D2D_FIXTURES_LOCATION, "/tmp/builtdocset"));
 }
 
 }  // namespace testing
