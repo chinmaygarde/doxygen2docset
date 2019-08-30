@@ -1,6 +1,8 @@
 Doxygen 2 Docsets
 =================
 
+[![CircleCI](https://circleci.com/gh/chinmaygarde/doxygen2docset.svg?style=svg)](https://circleci.com/gh/chinmaygarde/doxygen2docset)
+
 Converts Doxygen Documentation to a Dash or Zeal Docset.
 
 Usage
