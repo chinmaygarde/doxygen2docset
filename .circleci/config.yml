@@ -7,6 +7,10 @@ jobs:
     steps:
       - checkout
 
+      - run: apt update
+
+      - run: apt install cmake ninja
+
       - run:
           name: CMake
           command: mkdir -p /tmp/doxygen2docset/build && cd /tmp/doxygen2docset/build && cmake /root/project -G Ninja -DCMAKE_BUILD_TYPE=Release
