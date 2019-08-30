@@ -28,3 +28,7 @@ jobs:
       - run:
           name: Run Unit-Tests
           command: /tmp/doxygen2docset/build/tests/doxygen2docset_unittests
+
+      - store_artifacts:
+          path: /tmp/doxygen2docset/build/tests/doxygen2docset
+          destination: doxygen2docset
