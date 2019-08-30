@@ -27,4 +27,4 @@ jobs:
 
       - run:
           name: Run Unit-Tests
-          command: ./tmp/doxygen2docset/build/tests/doxygen2docset_unittests
+          command: /tmp/doxygen2docset/build/tests/doxygen2docset_unittests
