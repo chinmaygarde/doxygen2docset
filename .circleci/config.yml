@@ -1,0 +1,20 @@
+version: 2
+jobs:
+  build:
+    docker:
+      - image: debian:stretch
+
+    steps:
+      - checkout
+
+      - run:
+          name: CMake
+          command: mkdir -p /tmp/doxygen2docset/build && cd /tmp/doxygen2docset/build && cmake /root/project -G Ninja -DCMAKE_BUILD_TYPE=Release
+
+      - run:
+          name: Build with Ninja
+          command: ninja -C /tmp/doxygen2docset/build
+
+      - run:
+          name: Run Unit-Tests
+          command: ./tmp/doxygen2docset/build/tests/doxygen2docset_unittests
