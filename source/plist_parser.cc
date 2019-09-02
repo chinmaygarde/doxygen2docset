@@ -67,6 +67,8 @@ bool WriteDocSetPlist(const std::string& bundle_identifier,
          << bundle_identifier << R"~~~(</string>
      <key>isDashDocset</key>
      <true/>
+     <key>DashDocSetFamily</key>
+     <string>dashtoc</string>
 </dict>
 </plist>)~~~";
 
