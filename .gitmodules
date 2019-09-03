@@ -4,3 +4,6 @@
 [submodule "third_party/tinyxml2"]
 	path = third_party/tinyxml2
 	url = https://github.com/leethomason/tinyxml2.git
+[submodule "third_party/gumbo/gumbo"]
+	path = third_party/gumbo/gumbo
+	url = https://github.com/google/gumbo-parser.git

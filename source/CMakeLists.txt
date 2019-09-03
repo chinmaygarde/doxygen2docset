@@ -14,12 +14,15 @@ add_library(doxygen2docset_lib
     "token.h"
     "token_parser.cc"
     "token_parser.h"
+    "html_parser.h"
+    "html_parser.cc"
 )
 
 target_link_libraries(doxygen2docset_lib
   PUBLIC
     tinyxml2
     sqlite3
+    gumbo
 )
 
 target_include_directories(doxygen2docset_lib

@@ -1,0 +1,38 @@
+add_library(gumbo
+  STATIC
+    "gumbo/src/string_buffer.c"
+    "gumbo/src/error.h"
+    "gumbo/src/tag_enum.h"
+    "gumbo/src/util.c"
+    "gumbo/src/insertion_mode.h"
+    "gumbo/src/parser.h"
+    "gumbo/src/vector.c"
+    "gumbo/src/attribute.c"
+    "gumbo/src/char_ref.c"
+    "gumbo/src/tokenizer.h"
+    "gumbo/src/utf8.c"
+    "gumbo/src/string_piece.h"
+    "gumbo/src/tokenizer_states.h"
+    "gumbo/src/token_type.h"
+    "gumbo/src/tag_gperf.h"
+    "gumbo/src/string_buffer.h"
+    "gumbo/src/error.c"
+    "gumbo/src/tag.in"
+    "gumbo/src/util.h"
+    "gumbo/src/tag.c"
+    "gumbo/src/char_ref.h"
+    "gumbo/src/vector.h"
+    "gumbo/src/attribute.h"
+    "gumbo/src/parser.c"
+    "gumbo/src/tag_sizes.h"
+    "gumbo/src/tag_strings.h"
+    "gumbo/src/utf8.h"
+    "gumbo/src/tokenizer.c"
+    "gumbo/src/string_piece.c"
+    "gumbo/src/gumbo.h"
+)
+
+target_include_directories(gumbo
+  PUBLIC
+    "gumbo/src"
+)

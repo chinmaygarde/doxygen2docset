@@ -1,96 +1,11 @@
 #include "file.h"
 
-#include <dirent.h>
-#include <fcntl.h>
 #include <string.h>
-#include <sys/mman.h>
-#include <sys/stat.h>
-#include <unistd.h>
 
 #include <algorithm>
 #include <sstream>
 
-#include "logger.h"
-
 namespace d2d {
-
-class AutoFD {
- public:
-  AutoFD(int fd) : fd_(fd) {}
-
-  AutoFD(AutoFD&& fd) = delete;
-
-  AutoFD(const AutoFD& fd) = delete;
-
-  AutoFD& operator=(const AutoFD&) = delete;
-
-  AutoFD& operator=(AutoFD&& other) {
-    Reset(other.fd_);
-    other.fd_ = -1;
-    return *this;
-  };
-
-  int Get() const { return fd_; };
-
-  bool IsValid() const { return fd_ > 0; };
-
-  void Reset(int fd = -1) {
-    if (fd_ != fd && fd_ > 0) {
-      int result = D2D_TEMP_FAILURE_RETRY(::close(fd_));
-      if (result == -1) {
-        D2D_ERROR << "Could not close a file descriptor.";
-      }
-    }
-    fd_ = fd;
-  }
-
-  ~AutoFD() { Reset(); }
-
- private:
-  int fd_ = -1;
-};
-
-class AutoDir {
- public:
-  AutoDir(DIR* dir) : dir_(dir) {}
-
-  DIR* Get() const { return dir_; }
-
-  bool IsValid() const { return dir_ != nullptr; }
-
-  ~AutoDir() {
-    if (dir_ != nullptr) {
-      ::closedir(dir_);
-    }
-  }
-
- private:
-  DIR* dir_ = nullptr;
-  D2D_DISALLOW_COPY_AND_ASSIGN(AutoDir);
-};
-
-class AutoMapping {
- public:
-  AutoMapping(void* mapping, size_t size) : mapping_(mapping), size_(size) {}
-
-  ~AutoMapping() {
-    if (mapping_ != MAP_FAILED) {
-      if (::munmap(mapping_, size_) != 0) {
-        D2D_ERROR << "Error unmapping file.";
-      }
-    }
-  }
-
-  void* Get() const { return mapping_; }
-
-  bool IsValid() const { return mapping_ != MAP_FAILED; }
-
- private:
-  void* mapping_ = MAP_FAILED;
-  size_t size_ = 0;
-
-  D2D_DISALLOW_COPY_AND_ASSIGN(AutoMapping);
-};
 
 bool MakeDirectories(const std::vector<std::string>& directories) {
   AutoFD current_level(AT_FDCWD);
@@ -282,6 +197,36 @@ std::string JoinPaths(const std::vector<std::string>& paths,
   std::vector<std::string> merged = paths;
   merged.push_back(path);
   return JoinPaths(merged);
+}
+
+std::unique_ptr<AutoMapping> OpenFileReadOnly(const std::string& path) {
+  if (path.size() == 0) {
+    D2D_ERROR << "Path was empty when attempting to open file.";
+    return nullptr;
+  }
+
+  AutoFD fd(D2D_TEMP_FAILURE_RETRY(::open(path.c_str(), O_RDONLY)));
+  if (!fd.IsValid()) {
+    D2D_ERROR << "Could not open file: " << path;
+    return nullptr;
+  }
+
+  struct stat stat_buf = {0};
+  if (::fstat(fd.Get(), &stat_buf) != 0) {
+    D2D_ERROR << "Could not stat file.";
+    return nullptr;
+  }
+
+  auto mapping =
+      std::make_unique<AutoMapping>(::mmap(nullptr, stat_buf.st_size, PROT_READ,
+                                           MAP_FILE | MAP_PRIVATE, fd.Get(), 0),
+                                    stat_buf.st_size);
+  if (!mapping || !mapping->IsValid()) {
+    D2D_ERROR << "Could not create file mapping.";
+    return nullptr;
+  }
+
+  return mapping;
 }
 
 }  // namespace d2d
