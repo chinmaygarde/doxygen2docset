@@ -52,7 +52,7 @@ Preparing Doxygen for Docsets
 Building Locally
 ----------------
 
-Requirements: Mac or Linux Host, Clang or GCC (C++ 17 capable), and, CMake.
+Requirements: Mac or Linux Host, Clang or GCC (C++ 14 capable), and, CMake.
 
 * Make sure to pull submodules: `git submodule update --init --recursive`.
 * Create the build directory: `mkdir build/`.
