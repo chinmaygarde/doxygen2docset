@@ -43,9 +43,15 @@ Token::Token(const tinyxml2::XMLElement* element) {
   is_valid_ = true;
 }
 
+Token::Token() = default;
+
 Token::Token(Token&&) = default;
 
+Token::Token(const Token& token) = default;
+
 Token::~Token() = default;
+
+Token& Token::operator=(const Token&) = default;
 
 bool Token::IsValid() const { return is_valid_; }
 
@@ -105,5 +111,13 @@ std::string Token::GetIndexType() const {
 }
 
 std::string Token::GetIndexPath() const { return path_ + "#" + anchor_; }
+
+Token::TOCLinks Token::GetTokensByFile(const std::vector<Token>& tokens) {
+  TOCLinks links;
+  for (const auto& token : tokens) {
+    links[token.path_].push_back(token);
+  }
+  return links;
+}
 
 }  // namespace d2d

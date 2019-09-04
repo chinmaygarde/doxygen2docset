@@ -4,6 +4,7 @@
 
 #include "docset_index.h"
 #include "file.h"
+#include "html_parser.h"
 #include "logger.h"
 #include "plist_parser.h"
 #include "token_parser.h"
@@ -46,7 +47,9 @@ bool BuildDocset(const std::string& docs, const std::string& location) {
     return false;
   }
 
-  if (!index.AddTokens(token_parser.ReadTokens())) {
+  auto tokens = token_parser.ReadTokens();
+
+  if (!index.AddTokens(tokens)) {
     D2D_ERROR << "Could not add tokens to docset index.";
     return false;
   }
@@ -60,8 +63,44 @@ bool BuildDocset(const std::string& docs, const std::string& location) {
       "Tokens.xml",
       "Makefile",
   };
-  auto predicate = [&filtered](const std::string& file_name) -> bool {
-    return filtered.count(file_name) == 0;
+
+  auto tokens_by_file = Token::GetTokensByFile(tokens);
+
+  auto predicate = [&filtered, &tokens_by_file](
+                       const std::string& from_file_name,  //
+                       const struct stat& from_stat,       //
+                       const AutoFD& from_fd,              //
+                       const std::string& to_file_name) -> bool {
+    // Check if this file needs to be filtered away.
+    if (filtered.count(from_file_name) != 0) {
+      return true;
+    }
+
+    // Check if this is a file in which a TOC needs to be generated.
+    {
+      const auto found = tokens_by_file.find(from_file_name);
+      if (found != tokens_by_file.end()) {
+        HTMLParser parser(OpenFileReadOnly(from_fd, from_stat.st_size));
+        auto html_with_toc = parser.BuildHTMLWithTOC(found->second);
+        if (html_with_toc.IsValid()) {
+          if (!CopyData(html_with_toc.Get(),      //
+                        html_with_toc.GetSize(),  //
+                        to_file_name)) {
+            D2D_ERROR << "Could not copy HTML with TOC to " << to_file_name
+                      << ". Will try moving file without TOC.";
+
+          } else {
+            return true;
+          }
+        } else {
+          D2D_ERROR << "Could not build TOC in file: " << from_file_name
+                    << ". Skipping.";
+        }
+      }
+    }
+
+    // Copy file as-is.
+    return CopyFile(from_stat, from_fd, to_file_name);
   };
 
   if (!CopyFiles(docs, documents_directory, predicate)) {

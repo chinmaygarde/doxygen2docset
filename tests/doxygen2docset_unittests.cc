@@ -51,8 +51,18 @@ TEST(DoxyGen2DocsetTest, CanBuildCompleteDocset) {
 }
 
 TEST(DoxyGen2DocsetTest, CanParseHTML) {
-  HTMLParser parser(D2D_FIXTURES_LOCATION "/classflutter_1_1_shell.html");
+  HTMLParser parser(
+      OpenFileReadOnly(D2D_FIXTURES_LOCATION "/classflutter_1_1_shell.html"));
   ASSERT_TRUE(parser.IsValid());
+}
+
+TEST(DoxyGen2DocsetTest, CanGetTokensByFile) {
+  TokenParser parser(D2D_FIXTURES_LOCATION "/Tokens.xml");
+  ASSERT_TRUE(parser.IsValid());
+  auto tokens = parser.ReadTokens();
+  ASSERT_EQ(tokens.size(), 24877u);
+  auto links = Token::GetTokensByFile(tokens);
+  ASSERT_EQ(links.size(), 1630u);
 }
 
 }  // namespace testing

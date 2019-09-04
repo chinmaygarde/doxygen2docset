@@ -36,7 +36,8 @@ bool MakeDirectories(const std::vector<std::string>& directories) {
   return true;
 }
 
-bool CopyData(const void* data, size_t length, const std::string& to_path) {
+bool CopyData(const void* from_data, size_t from_length,
+              const std::string& to_path) {
   AutoFD to_file(
       D2D_TEMP_FAILURE_RETRY(::open(to_path.c_str(), O_CREAT | O_TRUNC | O_RDWR,
                                     S_IRUSR | S_IWUSR | S_IXUSR)));
@@ -46,22 +47,22 @@ bool CopyData(const void* data, size_t length, const std::string& to_path) {
     return false;
   }
 
-  if (::ftruncate(to_file.Get(), length) != 0) {
+  if (::ftruncate(to_file.Get(), from_length) != 0) {
     D2D_ERROR << "Could not truncate file " << to_path;
     return false;
   }
-  AutoMapping to_mapping(::mmap(nullptr, length, PROT_WRITE,
+  AutoMapping to_mapping(::mmap(nullptr, from_length, PROT_WRITE,
                                 MAP_FILE | MAP_SHARED, to_file.Get(), 0),
-                         length);
+                         from_length);
 
   if (!to_mapping.IsValid()) {
     D2D_ERROR << "Could not setup mapping to perform file copy.";
     return false;
   }
 
-  ::memcpy(to_mapping.Get(), data, length);
+  ::memcpy(to_mapping.Get(), from_data, from_length);
 
-  if (::msync(to_mapping.Get(), length, MS_SYNC) != 0) {
+  if (::msync(to_mapping.Get(), from_length, MS_SYNC) != 0) {
     D2D_ERROR << "Could not sync file contents.";
     return false;
   }
@@ -69,8 +70,8 @@ bool CopyData(const void* data, size_t length, const std::string& to_path) {
   return true;
 }
 
-static bool CopyFile(const struct stat& from_stat, const AutoFD& from,
-                     const std::string& to_path) {
+bool CopyFile(const struct stat& from_stat, const AutoFD& from,
+              const std::string& to_path) {
   AutoMapping from_mapping(::mmap(nullptr, from_stat.st_size, PROT_READ,
                                   MAP_FILE | MAP_PRIVATE, from.Get(), 0),
                            from_stat.st_size);
@@ -127,10 +128,6 @@ bool CopyFiles(const std::string& from_path,
       continue;
     }
 
-    if (!predicate(file_name)) {
-      continue;
-    }
-
     AutoFD from_fd(D2D_TEMP_FAILURE_RETRY(
         ::openat(::dirfd(from.Get()), file_name.c_str(), O_RDONLY)));
     if (!from_fd.IsValid()) {
@@ -153,7 +150,11 @@ bool CopyFiles(const std::string& from_path,
         return false;
       }
     } else {
-      if (!CopyFile(from_stat, from_fd, JoinPaths(to_path, file_name))) {
+      if (!predicate(file_name,                     //
+                     from_stat,                     //
+                     from_fd,                       //
+                     JoinPaths(to_path, file_name)  //
+                     )) {
         D2D_ERROR << "Could not copy file " << file_name;
         return false;
       }
@@ -199,6 +200,28 @@ std::string JoinPaths(const std::vector<std::string>& paths,
   return JoinPaths(merged);
 }
 
+std::unique_ptr<AutoMapping> OpenFileReadOnly(const AutoFD& fd, size_t size) {
+  if (!fd.IsValid()) {
+    D2D_ERROR << "File descriptor was invalid";
+    return nullptr;
+  }
+
+  auto mapping =
+      std::make_unique<AutoMapping>(::mmap(nullptr,                 //
+                                           size,                    //
+                                           PROT_READ,               //
+                                           MAP_FILE | MAP_PRIVATE,  //
+                                           fd.Get(),                //
+                                           0),
+                                    size);
+  if (!mapping || !mapping->IsValid()) {
+    D2D_ERROR << "Could not create file mapping.";
+    return nullptr;
+  }
+
+  return mapping;
+}
+
 std::unique_ptr<AutoMapping> OpenFileReadOnly(const std::string& path) {
   if (path.size() == 0) {
     D2D_ERROR << "Path was empty when attempting to open file.";
@@ -206,6 +229,7 @@ std::unique_ptr<AutoMapping> OpenFileReadOnly(const std::string& path) {
   }
 
   AutoFD fd(D2D_TEMP_FAILURE_RETRY(::open(path.c_str(), O_RDONLY)));
+
   if (!fd.IsValid()) {
     D2D_ERROR << "Could not open file: " << path;
     return nullptr;
@@ -217,16 +241,7 @@ std::unique_ptr<AutoMapping> OpenFileReadOnly(const std::string& path) {
     return nullptr;
   }
 
-  auto mapping =
-      std::make_unique<AutoMapping>(::mmap(nullptr, stat_buf.st_size, PROT_READ,
-                                           MAP_FILE | MAP_PRIVATE, fd.Get(), 0),
-                                    stat_buf.st_size);
-  if (!mapping || !mapping->IsValid()) {
-    D2D_ERROR << "Could not create file mapping.";
-    return nullptr;
-  }
-
-  return mapping;
+  return OpenFileReadOnly(fd, stat_buf.st_size);
 }
 
 }  // namespace d2d

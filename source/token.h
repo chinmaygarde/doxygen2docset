@@ -1,7 +1,10 @@
 #pragma once
 
 #include <tinyxml2.h>
+
+#include <map>
 #include <string>
+#include <vector>
 
 #include "macros.h"
 
@@ -9,9 +12,15 @@ namespace d2d {
 
 class Token {
  public:
+  Token();
+
   Token(const tinyxml2::XMLElement* element);
 
   Token(Token&&);
+
+  Token(const Token& token);
+
+  Token& operator=(const Token&);
 
   ~Token();
 
@@ -37,6 +46,9 @@ class Token {
 
   const std::string& GetDeclaredIn() const;
 
+  using TOCLinks = std::map<std::string, std::vector<Token>>;
+  static TOCLinks GetTokensByFile(const std::vector<Token>& tokens);
+
  private:
   bool is_valid_ = false;
   std::string name_;
@@ -46,8 +58,6 @@ class Token {
   std::string path_;
   std::string anchor_;
   std::string declared_in_;
-
-  D2D_DISALLOW_COPY_AND_ASSIGN(Token);
 };
 
 }  // namespace d2d

@@ -96,6 +96,41 @@ class AutoMapping {
   D2D_DISALLOW_COPY_AND_ASSIGN(AutoMapping);
 };
 
+class Allocation {
+ public:
+  Allocation() = default;
+
+  Allocation(size_t size)
+      : allocation_(::calloc(size, sizeof(uint8_t))), size_(size) {}
+
+  Allocation(Allocation&& o) : allocation_(o.allocation_), size_(o.size_) {
+    o.allocation_ = nullptr;
+    o.size_ = 0;
+  }
+
+  Allocation(const Allocation&) = delete;
+
+  Allocation& operator=(const Allocation&) = delete;
+
+  Allocation& operator=(Allocation&&) = delete;
+
+  ~Allocation() {
+    if (allocation_ != nullptr) {
+      ::free(allocation_);
+    }
+  }
+
+  bool IsValid() const { return allocation_ != nullptr; }
+
+  uint8_t* Get() const { return static_cast<uint8_t*>(allocation_); };
+
+  size_t GetSize() const { return size_; }
+
+ private:
+  void* allocation_ = nullptr;
+  size_t size_ = 0;
+};
+
 std::string JoinPaths(const std::vector<std::string>& paths);
 
 std::string JoinPaths(const std::string& path,
@@ -109,15 +144,23 @@ std::string JoinPaths(const std::vector<std::string>& paths,
 
 bool MakeDirectories(const std::vector<std::string>& directories);
 
-using CopyPredicate = std::function<bool(const std::string& file_name)>;
+using CopyPredicate = std::function<bool(const std::string& from_file_name,  //
+                                         const struct stat& from_stat,       //
+                                         const AutoFD& from_fd,              //
+                                         const std::string& to_file_name)>;
 
 bool CopyFiles(const std::string& from, const std::vector<std::string>& to,
                CopyPredicate predicate);
+
+bool CopyFile(const struct stat& from_stat, const AutoFD& from,
+              const std::string& to_path);
 
 bool CopyFile(const std::string& from, const std::string& to);
 
 bool CopyData(const void* data, size_t length, const std::string& to);
 
 std::unique_ptr<AutoMapping> OpenFileReadOnly(const std::string& path);
+
+std::unique_ptr<AutoMapping> OpenFileReadOnly(const AutoFD& fd, size_t size);
 
 }  // namespace d2d
