@@ -3,11 +3,18 @@ Dash or Zeal Docsets from Doxygen Documentation
 
 [![CircleCI](https://circleci.com/gh/chinmaygarde/doxygen2docset.svg?style=svg)](https://circleci.com/gh/chinmaygarde/doxygen2docset)
 
-Converts Doxygen Documentation to a [Dash](https://kapeli.com/dash) or [Zeal](https://zealdocs.org/) Docset.
+Converts Doxygen Documentation to a [Dash](https://kapeli.com/dash) or
+[Zeal](https://zealdocs.org/) Docset.
+
+Installation
+------------
+
+Download one of the [pre-built releases](https://github.com/chinmaygarde/doxygen2docset/releases) for supported platforms or [build locally](#building-locally).
 
 Usage
 -----
-First, generate Doxygen documentation with the `GENERATE_DOCSET` option enabled. Then generate the Docset with:
+First, generate Doxygen documentation with the `GENERATE_DOCSET` option enabled.
+Then generate the Docset with:
 ```
 doxgen2docset --doxygen <path to doxygen source> --docset <path to docset dir> [--help]
 ```
