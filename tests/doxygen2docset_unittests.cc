@@ -4,6 +4,7 @@
 #include "builder.h"
 #include "docset_index.h"
 #include "fixture.h"
+#include "html_parser.h"
 #include "token_parser.h"
 
 #ifndef D2D_FIXTURES_LOCATION
@@ -47,6 +48,21 @@ TEST(DoxyGen2DocsetTest, CanInsertTokensIntoIndex) {
 
 TEST(DoxyGen2DocsetTest, CanBuildCompleteDocset) {
   ASSERT_TRUE(BuildDocset(D2D_FIXTURES_LOCATION, "/tmp/builtdocset"));
+}
+
+TEST(DoxyGen2DocsetTest, CanParseHTML) {
+  HTMLParser parser(
+      OpenFileReadOnly(D2D_FIXTURES_LOCATION "/classflutter_1_1_shell.html"));
+  ASSERT_TRUE(parser.IsValid());
+}
+
+TEST(DoxyGen2DocsetTest, CanGetTokensByFile) {
+  TokenParser parser(D2D_FIXTURES_LOCATION "/Tokens.xml");
+  ASSERT_TRUE(parser.IsValid());
+  auto tokens = parser.ReadTokens();
+  ASSERT_EQ(tokens.size(), 24877u);
+  auto links = Token::GetTokensByFile(tokens);
+  ASSERT_EQ(links.size(), 1630u);
 }
 
 }  // namespace testing

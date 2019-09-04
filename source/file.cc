@@ -1,96 +1,11 @@
 #include "file.h"
 
-#include <dirent.h>
-#include <fcntl.h>
 #include <string.h>
-#include <sys/mman.h>
-#include <sys/stat.h>
-#include <unistd.h>
 
 #include <algorithm>
 #include <sstream>
 
-#include "logger.h"
-
 namespace d2d {
-
-class AutoFD {
- public:
-  AutoFD(int fd) : fd_(fd) {}
-
-  AutoFD(AutoFD&& fd) = delete;
-
-  AutoFD(const AutoFD& fd) = delete;
-
-  AutoFD& operator=(const AutoFD&) = delete;
-
-  AutoFD& operator=(AutoFD&& other) {
-    Reset(other.fd_);
-    other.fd_ = -1;
-    return *this;
-  };
-
-  int Get() const { return fd_; };
-
-  bool IsValid() const { return fd_ > 0; };
-
-  void Reset(int fd = -1) {
-    if (fd_ != fd && fd_ > 0) {
-      int result = D2D_TEMP_FAILURE_RETRY(::close(fd_));
-      if (result == -1) {
-        D2D_ERROR << "Could not close a file descriptor.";
-      }
-    }
-    fd_ = fd;
-  }
-
-  ~AutoFD() { Reset(); }
-
- private:
-  int fd_ = -1;
-};
-
-class AutoDir {
- public:
-  AutoDir(DIR* dir) : dir_(dir) {}
-
-  DIR* Get() const { return dir_; }
-
-  bool IsValid() const { return dir_ != nullptr; }
-
-  ~AutoDir() {
-    if (dir_ != nullptr) {
-      ::closedir(dir_);
-    }
-  }
-
- private:
-  DIR* dir_ = nullptr;
-  D2D_DISALLOW_COPY_AND_ASSIGN(AutoDir);
-};
-
-class AutoMapping {
- public:
-  AutoMapping(void* mapping, size_t size) : mapping_(mapping), size_(size) {}
-
-  ~AutoMapping() {
-    if (mapping_ != MAP_FAILED) {
-      if (::munmap(mapping_, size_) != 0) {
-        D2D_ERROR << "Error unmapping file.";
-      }
-    }
-  }
-
-  void* Get() const { return mapping_; }
-
-  bool IsValid() const { return mapping_ != MAP_FAILED; }
-
- private:
-  void* mapping_ = MAP_FAILED;
-  size_t size_ = 0;
-
-  D2D_DISALLOW_COPY_AND_ASSIGN(AutoMapping);
-};
 
 bool MakeDirectories(const std::vector<std::string>& directories) {
   AutoFD current_level(AT_FDCWD);
@@ -121,7 +36,8 @@ bool MakeDirectories(const std::vector<std::string>& directories) {
   return true;
 }
 
-bool CopyData(const void* data, size_t length, const std::string& to_path) {
+bool CopyData(const void* from_data, size_t from_length,
+              const std::string& to_path) {
   AutoFD to_file(
       D2D_TEMP_FAILURE_RETRY(::open(to_path.c_str(), O_CREAT | O_TRUNC | O_RDWR,
                                     S_IRUSR | S_IWUSR | S_IXUSR)));
@@ -131,22 +47,22 @@ bool CopyData(const void* data, size_t length, const std::string& to_path) {
     return false;
   }
 
-  if (::ftruncate(to_file.Get(), length) != 0) {
+  if (::ftruncate(to_file.Get(), from_length) != 0) {
     D2D_ERROR << "Could not truncate file " << to_path;
     return false;
   }
-  AutoMapping to_mapping(::mmap(nullptr, length, PROT_WRITE,
+  AutoMapping to_mapping(::mmap(nullptr, from_length, PROT_WRITE,
                                 MAP_FILE | MAP_SHARED, to_file.Get(), 0),
-                         length);
+                         from_length);
 
   if (!to_mapping.IsValid()) {
     D2D_ERROR << "Could not setup mapping to perform file copy.";
     return false;
   }
 
-  ::memcpy(to_mapping.Get(), data, length);
+  ::memcpy(to_mapping.Get(), from_data, from_length);
 
-  if (::msync(to_mapping.Get(), length, MS_SYNC) != 0) {
+  if (::msync(to_mapping.Get(), from_length, MS_SYNC) != 0) {
     D2D_ERROR << "Could not sync file contents.";
     return false;
   }
@@ -154,8 +70,8 @@ bool CopyData(const void* data, size_t length, const std::string& to_path) {
   return true;
 }
 
-static bool CopyFile(const struct stat& from_stat, const AutoFD& from,
-                     const std::string& to_path) {
+bool CopyFile(const struct stat& from_stat, const AutoFD& from,
+              const std::string& to_path) {
   AutoMapping from_mapping(::mmap(nullptr, from_stat.st_size, PROT_READ,
                                   MAP_FILE | MAP_PRIVATE, from.Get(), 0),
                            from_stat.st_size);
@@ -212,10 +128,6 @@ bool CopyFiles(const std::string& from_path,
       continue;
     }
 
-    if (!predicate(file_name)) {
-      continue;
-    }
-
     AutoFD from_fd(D2D_TEMP_FAILURE_RETRY(
         ::openat(::dirfd(from.Get()), file_name.c_str(), O_RDONLY)));
     if (!from_fd.IsValid()) {
@@ -238,7 +150,11 @@ bool CopyFiles(const std::string& from_path,
         return false;
       }
     } else {
-      if (!CopyFile(from_stat, from_fd, JoinPaths(to_path, file_name))) {
+      if (!predicate(file_name,                     //
+                     from_stat,                     //
+                     from_fd,                       //
+                     JoinPaths(to_path, file_name)  //
+                     )) {
         D2D_ERROR << "Could not copy file " << file_name;
         return false;
       }
@@ -282,6 +198,50 @@ std::string JoinPaths(const std::vector<std::string>& paths,
   std::vector<std::string> merged = paths;
   merged.push_back(path);
   return JoinPaths(merged);
+}
+
+std::unique_ptr<AutoMapping> OpenFileReadOnly(const AutoFD& fd, size_t size) {
+  if (!fd.IsValid()) {
+    D2D_ERROR << "File descriptor was invalid";
+    return nullptr;
+  }
+
+  auto mapping =
+      std::make_unique<AutoMapping>(::mmap(nullptr,                 //
+                                           size,                    //
+                                           PROT_READ,               //
+                                           MAP_FILE | MAP_PRIVATE,  //
+                                           fd.Get(),                //
+                                           0),
+                                    size);
+  if (!mapping || !mapping->IsValid()) {
+    D2D_ERROR << "Could not create file mapping.";
+    return nullptr;
+  }
+
+  return mapping;
+}
+
+std::unique_ptr<AutoMapping> OpenFileReadOnly(const std::string& path) {
+  if (path.size() == 0) {
+    D2D_ERROR << "Path was empty when attempting to open file.";
+    return nullptr;
+  }
+
+  AutoFD fd(D2D_TEMP_FAILURE_RETRY(::open(path.c_str(), O_RDONLY)));
+
+  if (!fd.IsValid()) {
+    D2D_ERROR << "Could not open file: " << path;
+    return nullptr;
+  }
+
+  struct stat stat_buf = {0};
+  if (::fstat(fd.Get(), &stat_buf) != 0) {
+    D2D_ERROR << "Could not stat file.";
+    return nullptr;
+  }
+
+  return OpenFileReadOnly(fd, stat_buf.st_size);
 }
 
 }  // namespace d2d
