@@ -1,3 +1,5 @@
+// This source file is part of doxygen2docset.
+// Licensed under the MIT License. See LICENSE.md file for details.
 
 #include "token_parser.h"
 
