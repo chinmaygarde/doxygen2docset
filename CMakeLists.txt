@@ -1,3 +1,6 @@
+# This source file is part of doxygen2docset.
+# Licensed under the MIT License. See LICENSE.md file for details.
+
 cmake_minimum_required(VERSION 3.7.2)
 
 set(CMAKE_CXX_STANDARD 14)
@@ -9,6 +12,7 @@ if(CMAKE_CXX_COMPILER_ID MATCHES "GNU")
 endif()
 
 set(BUILD_SHARED_LIBS OFF CACHE BOOL "Build deps as a static library." FORCE)
+
 add_subdirectory("third_party/googletest")
 add_subdirectory("third_party/tinyxml2")
 add_subdirectory("third_party/sqlite3")

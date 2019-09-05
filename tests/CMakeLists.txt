@@ -1,3 +1,6 @@
+# This source file is part of doxygen2docset.
+# Licensed under the MIT License. See LICENSE.md file for details.
+
 get_filename_component(FIXTURES_DIRECTORY fixtures ABSOLUTE)
 
 set(D2D_FIXTURES_LOCATION ${FIXTURES_DIRECTORY})

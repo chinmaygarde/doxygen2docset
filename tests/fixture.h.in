@@ -1,2 +1,4 @@
+// This source file is part of doxygen2docset.
+// Licensed under the MIT License. See LICENSE.md file for details.
 
 #cmakedefine D2D_FIXTURES_LOCATION "@D2D_FIXTURES_LOCATION@"
