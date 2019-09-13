@@ -5,11 +5,12 @@ jobs:
       - image: debian:stretch
 
     steps:
-      - checkout
 
       - run:
           name: Install Dependencies
           command: apt update && apt install -y build-essential cmake ninja-build git
+
+      - checkout
 
       - run:
           name: "Pull Submodules"
