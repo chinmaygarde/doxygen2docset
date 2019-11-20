@@ -19,6 +19,10 @@ Then generate the Docset with:
 doxgen2docset --doxygen <path to doxygen source> --docset <path to docset dir> [--help]
 ```
 
+Examples
+--------
+Docset Feeds for [Skia](https://skia-docs.chinmaygarde.com/docs/docset.xml) & the [Flutter Engine](https://engine.chinmaygarde.com/docset.xml) are available. A small Debian VM instance monitors GitHub repositories and runs the `doxygen2docset` tool on Doxygen generated docs to update Dash feeds regularly.
+
 Options
 -------
 
@@ -56,8 +60,8 @@ Preparing Doxygen for Docsets
     * `Info.plist`
 
 
-Building Locally
-----------------
+Building the Tool Locally
+-------------------------
 
 Requirements: Mac or Linux Host, Clang or GCC (C++ 14 capable), and, CMake.
 
