@@ -30,6 +30,10 @@ jobs:
           name: Run Unit-Tests
           command: /tmp/doxygen2docset/build/tests/doxygen2docset_unittests
 
+      - run:
+          name: Package Release Artifacts
+          command: ninja -C /tmp/doxygen2docset/build package
+
       - store_artifacts:
           path: /tmp/doxygen2docset/build/source/doxygen2docset-0.1.1-Linux.deb
           destination: doxygen2docset
