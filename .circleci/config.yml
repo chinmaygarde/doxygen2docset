@@ -31,5 +31,5 @@ jobs:
           command: /tmp/doxygen2docset/build/tests/doxygen2docset_unittests
 
       - store_artifacts:
-          path: /tmp/doxygen2docset/build/source/doxygen2docset
+          path: /tmp/doxygen2docset/build/source/doxygen2docset-0.1.1-Linux.deb
           destination: doxygen2docset
