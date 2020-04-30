@@ -36,4 +36,4 @@ jobs:
 
       - store_artifacts:
           path: /tmp/doxygen2docset/build/doxygen2docset-0.1.1-Linux.deb
-          destination: doxygen2docset
+          destination: doxygen2docset.deb
