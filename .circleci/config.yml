@@ -35,5 +35,5 @@ jobs:
           command: ninja -C /tmp/doxygen2docset/build package
 
       - store_artifacts:
-          path: /tmp/doxygen2docset/build/source/doxygen2docset-0.1.1-Linux.deb
+          path: /tmp/doxygen2docset/build/doxygen2docset-0.1.1-Linux.deb
           destination: doxygen2docset
