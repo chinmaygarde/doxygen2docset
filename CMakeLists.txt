@@ -7,6 +7,12 @@ set(CMAKE_CXX_STANDARD 14)
 
 project("doxygen2docset" LANGUAGES CXX C)
 
+find_program(CCACHE_PROGRAM NAMES ccache)
+if(CCACHE_PROGRAM)
+  set_property(GLOBAL PROPERTY RULE_LAUNCH_COMPILE "${CCACHE_PROGRAM}")
+  set_property(GLOBAL PROPERTY RULE_LAUNCH_LINK "${CCACHE_PROGRAM}")
+endif()
+
 if(CMAKE_CXX_COMPILER_ID MATCHES "GNU")
   set(CMAKE_EXE_LINKER_FLAGS " ${CMAKE_EXE_LINKER_FLAGS} -static-libstdc++ -static-libgcc ")
 endif()
