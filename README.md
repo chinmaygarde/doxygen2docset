@@ -21,7 +21,7 @@ doxgen2docset --doxygen <path to doxygen source> --docset <path to docset dir> [
 
 Examples
 --------
-Docset Feeds for [Skia](https://skia-docs.chinmaygarde.com/docs/docset.xml) & the [Flutter Engine](https://engine.chinmaygarde.com/docset.xml) are available. A small Debian VM instance monitors GitHub repositories and runs the `doxygen2docset` tool on Doxygen generated docs to update Dash feeds regularly.
+Docset Feeds for the [Flutter Engine](https://engine.chinmaygarde.com/docset.xml) are available. A small Debian VM instance monitors GitHub repositories and runs the `doxygen2docset` tool on Doxygen generated docs to update Dash feeds regularly.
 
 Options
 -------
