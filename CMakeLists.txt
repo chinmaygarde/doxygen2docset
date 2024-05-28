@@ -13,7 +13,12 @@ if(CCACHE_PROGRAM)
   set_property(GLOBAL PROPERTY RULE_LAUNCH_LINK "${CCACHE_PROGRAM}")
 endif()
 
-if(CMAKE_CXX_COMPILER_ID MATCHES "GNU")
+if(HAIKU)
+  # Haiku doesn't define the MAP_FILE compatibility constant
+  add_definitions(-DMAP_FILE=0)
+endif()
+
+if(CMAKE_CXX_COMPILER_ID MATCHES "GNU" AND NOT HAIKU)
   set(CMAKE_EXE_LINKER_FLAGS " ${CMAKE_EXE_LINKER_FLAGS} -static-libstdc++ -static-libgcc ")
 endif()
 
@@ -28,7 +33,7 @@ add_subdirectory("source")
 add_subdirectory("tests")
 
 # Debian Packages on Linux.
-if(UNIX AND NOT APPLE)
+if(UNIX AND NOT APPLE AND NOT HAIKU)
   set(CPACK_PACKAGE_NAME "doxygen2docset")
   set(CPACK_PACKAGE_VENDOR "Chinmay Garde")
   set(CPACK_PACKAGE_CONTACT "chinmaygarde@gmail.com")
@@ -40,4 +45,4 @@ if(UNIX AND NOT APPLE)
   set(CPACK_RESOURCE_FILE_README "${CMAKE_CURRENT_SOURCE_DIR}/README.md")
   set(CPACK_GENERATOR "DEB")
   include(CPack)
-endif(UNIX AND NOT APPLE)
+endif(UNIX AND NOT APPLE AND NOT HAIKU)
