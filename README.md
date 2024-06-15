@@ -1,8 +1,6 @@
 Dash or Zeal Docsets from Doxygen Documentation
 ===============================================
 
-[![CircleCI](https://circleci.com/gh/chinmaygarde/doxygen2docset.svg?style=svg)](https://circleci.com/gh/chinmaygarde/doxygen2docset)
-
 Converts Doxygen Documentation to a [Dash](https://kapeli.com/dash) or
 [Zeal](https://zealdocs.org/) Docset.
 
@@ -15,13 +13,10 @@ Usage
 -----
 First, generate Doxygen documentation with the `GENERATE_DOCSET` option enabled.
 Then generate the Docset with:
+
 ```
 doxgen2docset --doxygen <path to doxygen source> --docset <path to docset dir> [--help]
 ```
-
-Examples
---------
-Docset Feeds for the [Flutter Engine](https://engine.chinmaygarde.com/docset.xml) are available. A small Debian VM instance monitors GitHub repositories and runs the `doxygen2docset` tool on Doxygen generated docs to update Dash feeds regularly.
 
 Options
 -------
