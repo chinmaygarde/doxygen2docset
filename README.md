@@ -1,6 +1,8 @@
 Dash or Zeal Docsets from Doxygen Documentation
 ===============================================
 
+[![Build](https://github.com/chinmaygarde/doxygen2docset/actions/workflows/build.yml/badge.svg)](https://github.com/chinmaygarde/doxygen2docset/actions/workflows/build.yml)
+
 Converts Doxygen Documentation to a [Dash](https://kapeli.com/dash) or
 [Zeal](https://zealdocs.org/) Docset.
 
