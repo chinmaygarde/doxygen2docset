@@ -1,0 +1,25 @@
+name: Build
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  build:
+    name: Build with CMake
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [macos-latest, ubuntu-latest]
+    steps:
+    - uses: actions/checkout@v4
+    - uses: extractions/setup-just@v3
+    - name: Pull Dependencies
+      run: just sync
+    - name: Generate Build Directory
+      run: just setup
+    - name: Build with CMake
+      run: just build

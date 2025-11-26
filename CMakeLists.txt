@@ -1,7 +1,7 @@
 # This source file is part of doxygen2docset.
 # Licensed under the MIT License. See LICENSE.md file for details.
 
-cmake_minimum_required(VERSION 3.7.2)
+cmake_minimum_required(VERSION 3.10)
 
 set(CMAKE_CXX_STANDARD 14)
 
