@@ -2,8 +2,8 @@
   "build_systems":
   [
     {
-      "name": "Doxygen2Docset CMake",
-      "shell_cmd": "(mkdir -p build && cd build && cmake ../ -G Ninja)",
+      "name": "Doxygen2Docset All",
+      "shell_cmd": "just build",
       "working_dir": "${project_path}",
       "shell": true,
     },

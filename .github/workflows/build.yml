@@ -16,6 +16,8 @@ jobs:
         os: [macos-latest, ubuntu-latest]
     steps:
     - uses: actions/checkout@v4
+    - name: Setup VCPKG
+      uses: lukka/run-vcpkg@v11
     - uses: extractions/setup-just@v3
     - name: Pull Dependencies
       run: just sync

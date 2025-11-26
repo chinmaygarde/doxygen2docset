@@ -22,13 +22,6 @@ if(CMAKE_CXX_COMPILER_ID MATCHES "GNU" AND NOT HAIKU)
   set(CMAKE_EXE_LINKER_FLAGS " ${CMAKE_EXE_LINKER_FLAGS} -static-libstdc++ -static-libgcc ")
 endif()
 
-set(BUILD_SHARED_LIBS OFF CACHE BOOL "Build deps as a static library." FORCE)
-
-add_subdirectory("third_party/googletest" EXCLUDE_FROM_ALL)
-add_subdirectory("third_party/tinyxml2" EXCLUDE_FROM_ALL)
-add_subdirectory("third_party/sqlite3" EXCLUDE_FROM_ALL)
-add_subdirectory("third_party/gumbo" EXCLUDE_FROM_ALL)
-
 add_subdirectory("source")
 add_subdirectory("tests")
 
