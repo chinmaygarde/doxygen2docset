@@ -1,0 +1,8 @@
+{
+  "dependencies": [
+    "gumbo",
+    "sqlite3",
+    "tinyxml2",
+    "gtest"
+  ]
+}

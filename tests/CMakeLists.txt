@@ -16,8 +16,11 @@ target_include_directories(doxygen2docset_unittests
   PRIVATE
     ${CMAKE_CURRENT_BINARY_DIR})
 
+enable_testing()
+find_package(GTest CONFIG REQUIRED)
+
 target_link_libraries(doxygen2docset_unittests
   PRIVATE
-    gtest
+    GTest::gtest
     doxygen2docset_lib
 )
