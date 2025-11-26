@@ -28,9 +28,13 @@ Converts Doxygen Documentation to a [Dash](https://kapeli.com/dash) or
 
 # Build Requirements
 
+* CMake (3.10 or above).
+* Git.
+* Ninja.
+* [Just](https://just.systems/), a task runner.
 * A C++14 compiler.
-* CMake.
-* just, a task runner.
+* [vcpkg](https://vcpkg.io/en/index.html) for package management.
+  * Ensure that the `VCPKG_ROOT` environment variable is present and valid.
 
 # Build
 
