@@ -30,7 +30,7 @@ Preparing Project Doxyfile for Docsets
 Building
 --------
 
-Requirements: A C++ 14 compiler and CMake.
+Requirements: A C++ 14 compiler and CMake. A justfile contains some easy to use tasks that basically run CMake.
 
 * Make sure to pull submodules.
 ```sh
