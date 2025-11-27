@@ -4,5 +4,6 @@
     "sqlite3",
     "tinyxml2",
     "gtest"
-  ]
+  ],
+  "builtin-baseline": "66c1c9852bb30bd87285e77cc775072046d51fc6"
 }
