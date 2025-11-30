@@ -18,6 +18,17 @@ jobs:
     - uses: actions/checkout@v4
     - name: Setup VCPKG
       uses: lukka/run-vcpkg@v11
+      env:
+        VCPKG_BINARY_SOURCES: default,rw
+    # Cache vcpkg binary sources.
+    # Adapted from https://github.com/lukka/run-vcpkg/issues/251
+    - name: Set up binary cache
+      uses: actions/cache@v4
+      with:
+        path: ${{ env.VCPKG_DEFAULT_BINARY_CACHE }}
+        key: ${{ runner.os }}-vcpkg-binary-cache-${{ hashFiles('vcpkg*.json') }}
+        restore-keys: |
+            ${{ runner.os }}-vcpkg-binary-cache-
     - uses: extractions/setup-just@v3
     - name: Pull Dependencies
       run: just sync
