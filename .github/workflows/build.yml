@@ -34,5 +34,7 @@ jobs:
       run: just sync
     - name: Generate Build Directory
       run: just setup
-    - name: Build with CMake
+    - name: Build
       run: just build
+    - name: Test
+      run: just test

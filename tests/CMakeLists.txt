@@ -24,3 +24,6 @@ target_link_libraries(doxygen2docset_unittests
     GTest::gtest
     doxygen2docset_lib
 )
+
+include(GoogleTest)
+gtest_discover_tests(doxygen2docset_unittests)

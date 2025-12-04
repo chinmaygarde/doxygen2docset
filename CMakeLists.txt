@@ -7,6 +7,8 @@ set(CMAKE_CXX_STANDARD 14)
 
 project("doxygen2docset" LANGUAGES CXX C)
 
+enable_testing()
+
 find_program(CCACHE_PROGRAM NAMES ccache)
 if(CCACHE_PROGRAM)
   set_property(GLOBAL PROPERTY RULE_LAUNCH_COMPILE "${CCACHE_PROGRAM}")

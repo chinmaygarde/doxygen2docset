@@ -6,6 +6,9 @@ alias gen := setup
 setup preset='default':
 	cmake --preset {{preset}}
 
+test preset='default':
+	@ctest --preset {{preset}}
+
 clean:
 	rm -rf build
 
