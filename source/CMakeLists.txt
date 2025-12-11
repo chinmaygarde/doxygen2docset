@@ -46,6 +46,9 @@ target_link_libraries(doxygen2docset
 
 set_target_properties(doxygen2docset PROPERTIES LINK_FLAGS_RELEASE -s)
 
+include(GNUInstallDirs)
+
 install(TARGETS doxygen2docset
         RUNTIME
-        DESTINATION bin)
+        DESTINATION ${CMAKE_INSTALL_BINDIR}
+)
