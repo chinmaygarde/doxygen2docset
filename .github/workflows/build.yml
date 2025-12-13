@@ -3,6 +3,8 @@ name: Build
 on:
   push:
     branches: [ "main" ]
+    tags:
+      - v*.*.*
   pull_request:
     branches: [ "main" ]
 
@@ -39,5 +41,23 @@ jobs:
     - name: Upload Artifacts
       uses: actions/upload-artifact@v4
       with:
+        name: doxygen2docset_${{ runner.os }}_${{ runner.arch }}
         path: build/to_upload
         if-no-files-found: error
+  release:
+    permissions:
+      contents: write
+    name: Release Builds
+    runs-on: ubuntu-24.04
+    needs: build
+    if: github.ref_type == 'tag'
+    steps:
+      - name: Download artifacts.
+        uses: actions/download-artifact@v5
+        with:
+          pattern: doxygen2docset_*
+          path: dist
+      - uses: softprops/action-gh-release@v2
+        with:
+          files: dist/*
+          generate_release_notes: true
