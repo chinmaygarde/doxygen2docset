@@ -17,9 +17,3 @@ sync:
 
 list-builds:
 	@cmake --list-presets
-
-install:
-	just setup release
-	just build release
-	just test release
-	cmake --install build/release
