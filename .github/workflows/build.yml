@@ -35,4 +35,4 @@ jobs:
             ${{ runner.os }}-vcpkg-binary-cache-
     - uses: extractions/setup-just@v3
     - name: Compile and Package
-      run: ci-build-package
+      run: just ci-build-package

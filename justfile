@@ -24,5 +24,6 @@ ci-build-package:
 	just build release
 	just test release
 	rm -rf build/release/installed
+	rm -rf build/to_upload
 	cmake --install build/release --prefix=build/release/installed
-	tar -czvf build/doxygen2doxset-{{ os() }}-{{ arch() }}.tar.gz -C build/release/installed .
+	tar -czvf build/to_upload/doxygen2doxset-{{ os() }}-{{ arch() }}.tar.gz -C build/release/installed .
