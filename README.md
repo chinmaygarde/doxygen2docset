@@ -5,9 +5,14 @@
 Converts Doxygen Documentation to a [Dash](https://kapeli.com/dash) or
 [Zeal](https://zealdocs.org/) Docset.
 
+# Installation
+
+* Grab a prebuilt binary for a [release](https://github.com/chinmaygarde/doxygen2docset/releases).
+* Or, Build the binary yourself using [these instructions](#build).
+
 # Usage
 
-* [Prepare your Doxygen docs](#preparing-project-doxyfile-for-docsets).
+* **First**, [Prepare your Doxygen docs](#preparing-project-doxyfile-for-docsets).
 * Generate the Docset from the Doxygen generated docs using:
   ```
   doxgen2docset --doxygen <path to doxygen source> --docset <path to docset dir> [--help]
