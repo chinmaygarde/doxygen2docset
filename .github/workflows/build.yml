@@ -34,11 +34,5 @@ jobs:
         restore-keys: |
             ${{ runner.os }}-vcpkg-binary-cache-
     - uses: extractions/setup-just@v3
-    - name: Pull Dependencies
-      run: just sync
-    - name: Generate Build Directory
-      run: just setup
-    - name: Build
-      run: just build
-    - name: Test
-      run: just test
+    - name: Compile and Package
+      run: ci-build-package
