@@ -5,6 +5,8 @@
 Converts Doxygen Documentation to a [Dash](https://kapeli.com/dash) or
 [Zeal](https://zealdocs.org/) Docset.
 
+![Example](assets/example.webp)
+
 # Installation
 
 * Grab a prebuilt binary for a [release](https://github.com/chinmaygarde/doxygen2docset/releases).
