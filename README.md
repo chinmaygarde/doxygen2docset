@@ -70,3 +70,7 @@ just build
 
   --help          Print this documentation.
 ```
+
+# Release Workflow
+
+Tag a commit with a name of the format vx.x.x. GitHub CI should take care of the rest.

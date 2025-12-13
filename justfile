@@ -27,4 +27,4 @@ ci-build-package:
 	rm -rf build/to_upload
 	mkdir build/to_upload
 	cmake --install build/release --prefix=build/release/installed
-	tar -czvf build/to_upload/doxygen2doxset-{{ os() }}-{{ arch() }}.tar.gz -C build/release/installed .
+	tar -czvf build/to_upload/doxygen2docset-{{ os() }}-{{ arch() }}.tar.gz -C build/release/installed .
