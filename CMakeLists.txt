@@ -7,6 +7,8 @@ set(CMAKE_CXX_STANDARD 14)
 
 project("doxygen2docset" LANGUAGES CXX C)
 
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+
 enable_testing()
 
 find_program(CCACHE_PROGRAM NAMES ccache)

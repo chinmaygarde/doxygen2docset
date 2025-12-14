@@ -42,5 +42,20 @@
       "name": "Doxygen2Docset",
       "path": "."
     },
-  ]
+  ],
+  "settings":
+  {
+    "LSP":
+    {
+      "clangd":
+      {
+        "initializationOptions" : {
+          "clangd.compile-commands-dir": "build",
+          "clangd.background-index": true,
+          "clangd.header-insertion": "never",
+          "clangd.clang-tidy": true,
+        }
+      },
+    },
+  },
 }
